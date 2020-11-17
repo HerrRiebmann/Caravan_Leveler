@@ -36,6 +36,9 @@ ESP 32 | LM2596
 5V | OUT+
 GND | OUT-
 
+## SPIFFS Upload
+To upload the HTML, JS and CSS files, I´ve used the [Arduino ESP32 filesystem uploader](https://github.com/me-no-dev/arduino-esp32fs-plugin)
+You can find the latest release [here](https://github.com/me-no-dev/arduino-esp32fs-plugin/releases/) and a tutorial on [RandomNerdTutorials](https://randomnerdtutorials.com/install-esp32-filesystem-uploader-arduino-ide/)
 
 ## Images
 
