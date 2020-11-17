@@ -44,6 +44,8 @@ canvas {
   border-radius: 50%;
   display: inline-block;
   position: fixed;
+  top: 240;
+  margin: 0 -40px;
 }
 .dotY {
   height: 30px;
@@ -52,6 +54,8 @@ canvas {
   border-radius: 50%;
   display: inline-block;
   position: fixed;
+  top: 370;
+  margin: 0 -40px;
 }
 .card {  
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);

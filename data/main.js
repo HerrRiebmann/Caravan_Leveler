@@ -8,8 +8,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	};
 	slider.onchange = function() {
 		var oRequest = new XMLHttpRequest();
-		var sURL  = '/threshold?v=';
-		sURL += this.value
+		var sURL  = '/threshold?v=' + this.value;
 		oRequest.open("GET",sURL,true);	
 		oRequest.onerror = function (e) {SetOutput("Threshold failed!", true);};
 		oRequest.send(null);		
@@ -19,7 +18,6 @@ document.addEventListener("DOMContentLoaded", function(){
 function GetLevel(){
 	var oRequest = new XMLHttpRequest();
 	var sURL  = '/level';
-
 	oRequest.open("GET",sURL,true);	
 	oRequest.onload = function (e) {
 	  if (oRequest.readyState === 4) {
@@ -42,16 +40,15 @@ function GetLevel(){
 	  }
 	};
 	oRequest.onerror = function (e) {		
-	//Fake values on a computer. Referring to the ESP will alert a cross site scripting error
-	SetLevel(Math.floor(Math.random() * 90) * -1, Math.floor(Math.random() * 90), 10);
-	SetOutput("PC random values", false);	
+		//Fake values on a computer. Referring to the ESP will alert a cross site scripting error
+		SetLevel(Math.floor(Math.random() * 90) * -1, Math.floor(Math.random() * 90), 10);
+		SetOutput("PC random values", false);	
 	};
 	oRequest.send(null);
 }
 function Calibrate(){
 	var oRequest = new XMLHttpRequest();
 	var sURL  = '/calibrate';
-
 	oRequest.open("GET",sURL,true);	
 	oRequest.onload = function (e) {
 		if(oRequest.readyState === 4 && oRequest.status === 200){
@@ -118,6 +115,7 @@ function SetDots(desc){
 	var can = document.getElementById("Level"+desc+"Canvas");
 	var txt = document.getElementById("Level"+desc);
 	var dot = document.getElementById("Dot"+desc);
+	dot.style.margin = "0px 0px 0px 0px";
 	dot.style.top = can.getBoundingClientRect().top + (can.height / 2 - dot.clientHeight / 2);
 	dot.style.left = can.getBoundingClientRect().left + (can.width / 2 - dot.clientWidth / 2);	
 	var value = parseFloat(txt.value);
@@ -194,12 +192,12 @@ function SetColor(element, value){
 function hsl_col_perc(percent, start, end) {
   var a = percent / 100,
       b = (end - start) * a,
-  		c = b + start;
+  	  c = b + start;
   // Return a CSS HSL string
   return 'hsl('+c+', 100%, 50%)';
 }
-function SetSliderVisibility(){	
-	document.getElementById("SlideContainer").style.display = "block";
+function SetSetupVisibility(){	
+	document.getElementById("SetupContainer").style.display = "block";
 }
 function SetOutput(text, error){
 	var output = document.getElementById("Output");
@@ -207,5 +205,5 @@ function SetOutput(text, error){
 	output.style.color = error? "#FF0000" : "#008CBA";
 }
 function CloseModal() {  
-  document.getElementById("SlideContainer").style.display = "none";
+  document.getElementById("SetupContainer").style.display = "none";
 }
