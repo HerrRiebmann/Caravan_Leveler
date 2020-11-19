@@ -29,6 +29,20 @@ void getLevel() {
   levelX = map(x, (valuationX - calibrationX) * -1, (valuationX + calibrationX), -900, 900);
   levelY = map(y, (valuationY - calibrationY) * -1, (valuationY + calibrationY), -900, 900);
 
+  //Take the average to smooth the result:
+  if(lastLevelX == 0xFFFF && lastLevelY == 0xFFFF){
+    lastLevelX = levelX;
+    lastLevelY = levelY;
+  }
+  else{
+    int tmpX = levelX;
+    int tmpY = levelY;
+    levelX = (lastLevelX + levelX) / 2;
+    levelY = (lastLevelY + levelY) / 2;
+    lastLevelX = tmpX;
+    lastLevelY = tmpY;
+  }
+
   Serial.print("X: ");
   Serial.print(levelX);
   Serial.print(" Y: ");

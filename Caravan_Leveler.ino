@@ -30,6 +30,8 @@ DNSServer dnsServer;
 bool accelInitialized = false;
 int levelX = 0;
 int levelY = 0;
+int lastLevelX = 0xFFFF;
+int lastLevelY = 0xFFFF;
 int calibrationX = -150;
 int calibrationY = -25;
 int valuationX = 271;

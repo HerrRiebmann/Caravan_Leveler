@@ -42,6 +42,8 @@ canvas {
   width: 30px;
   background-color: #bfbfbf;
   border-radius: 50%;
+  border: 2px solid #9C9898; 
+  box-shadow: 2px 2px 5px #222;
   display: inline-block;
   position: fixed;
   top: 240;
@@ -52,6 +54,8 @@ canvas {
   width: 36px;
   background-color: #bfbfbf;
   border-radius: 50%;
+  border: 2px solid #9C9898;
+  box-shadow: 2px 2px 5px #222;
   display: inline-block;
   position: fixed;
   top: 370;
@@ -63,6 +67,10 @@ canvas {
   background: DarkGray;
   width:350px;
   margin: auto;
+  background-image: url('sport-and-fun_480-ql.png');
+  background-repeat: no-repeat;
+  background-position: center 40px;
+  
 }
 .slider {
   -webkit-appearance: none;

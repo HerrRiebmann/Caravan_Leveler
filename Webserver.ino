@@ -14,13 +14,17 @@ void WiFiBegin() {
   webServer.on("/main.js", handle_script);
   webServer.on("/style.css", handle_style);
   webServer.on("/favicon.ico", handle_icon);
+  webServer.on("/sport-and-fun_480-ql.png", handle_img);
   webServer.on("/calibrate", handle_calibrate);
   webServer.on("/generate_204", handle_root);  //Android captive portal. Maybe not needed. Might be handled by notFound handler.
   webServer.on("/fwlink", handle_root);   //Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
   webServer.onNotFound(handleNotFound);
 
+  const char* Headers[] = {"If-None-Match"};
+  webServer.collectHeaders(Headers, sizeof(Headers)/ sizeof(Headers[0]));
+
   webServer.begin();
-  Serial.println("HTTP webServer started");
+  Serial.println(F("HTTP webServer started"));
   delay(100);
 }
 
@@ -37,9 +41,9 @@ void ConnectToAccessPoint() {
       return;
     }
   }
-  Serial.println("");
-  Serial.println("WiFi connected successfully");
-  Serial.print("Got IP: ");
+  Serial.println();
+  Serial.println(F("WiFi connected successfully"));
+  Serial.print(F("Got IP: "));
   Serial.println(WiFi.localIP());  //Show ESP32 IP on serial
 }
 
@@ -54,7 +58,7 @@ void CreateAccessPoint() {
   delay(500);
   WiFi.softAPConfig(local_ip, gateway, subnet);
   delay(500);
-  Serial.print("AP IP address: ");
+  Serial.print(F("AP IP address: "));
   Serial.println(WiFi.softAPIP());
 
   /* Setup the DNS webServer redirecting all the domains to the apIP */
@@ -163,6 +167,9 @@ void handle_setup() {
 void handle_script() {
   Serial.println(F("Handle Script"));
 
+  if(ProcessETag("201119-Script"))
+    return;
+
   String path = "/main.js";
   if (!SPIFFS.exists(path))
     return;
@@ -174,6 +181,9 @@ void handle_script() {
 
 void handle_style() {
   Serial.println(F("Handle Style"));
+
+  if(ProcessETag("201119-Style"))
+    return;
 
   String path = "/style.css";
   if (!SPIFFS.exists(path))
@@ -187,12 +197,31 @@ void handle_style() {
 void handle_icon() {
   Serial.println(F("Handle Icon"));
 
+  if(ProcessETag("201119-Favicon"))
+    return;
+    
   String path = "/favicon.ico";
   if (!SPIFFS.exists(path))
     return;
 
   File f = SPIFFS.open(path);
   webServer.streamFile(f, "image/x-icon");
+  f.close();
+}
+
+void handle_img() {
+  Serial.println(F("Handle Img"));
+
+  //Etag request:  
+  if(ProcessETag("201119-SportAndFun"))
+    return;
+
+  String path = "/sport-and-fun_480-ql.png";
+  if (!SPIFFS.exists(path))
+    return;
+
+  File f = SPIFFS.open(path);    
+  webServer.streamFile(f, "image/png");
   f.close();
 }
 
@@ -238,8 +267,7 @@ boolean captivePortal() {
   Serial.print(F("Captive Check: "));
   Serial.println(webServer.hostHeader());
   if (!isIp(webServer.hostHeader())) {
-    Serial.println("Request redirected to captive portal:");
-    Serial.println(webServer.hostHeader());
+    Serial.println("Request redirected to captive portal");    
     webServer.sendHeader("Location", String("http://") + toStringIp(webServer.client().localIP()), true);
     webServer.send(302, "text/plain", "");   // Empty content inhibits Content-length header so we have to close the socket ourselves.
     webServer.client().stop(); // Stop is needed because we sent no content length

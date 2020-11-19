@@ -33,6 +33,21 @@ boolean isIp(String str) {
   return true;
 }
 
+bool ProcessETag(const char* ETag){
+  for (int i = 0; i < webServer.headers(); i++){    
+    if(webServer.headerName(i).compareTo(F("If-None-Match")) == 0)
+      if(webServer.header(i).compareTo(ETag) == 0){
+        webServer.send(304, "text/plain", F("Not Modified"));
+        Serial.println(String(F(" ")) + webServer.headerName(i) + F(": ") + webServer.header(i));
+        Serial.println(F(" - Not Modified"));
+        return true;
+      }    
+  }
+  webServer.sendHeader("ETag", ETag);
+  webServer.sendHeader("Cache-Control", "public");    
+  return false;
+}
+
 String toStringIp(IPAddress ip) {
   Serial.println("IptoString");
   String res = "";
