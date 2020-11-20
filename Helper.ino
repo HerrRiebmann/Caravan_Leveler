@@ -18,7 +18,7 @@ void SpiffsBegin() {
 }
 
 void EepromBegin() {
-  if (!EEPROM.begin(10))
+  if (!EEPROM.begin(11))
     Serial.println("An Error has occurred while initializing EEPROM");
 }
 
@@ -33,19 +33,59 @@ boolean isIp(String str) {
   return true;
 }
 
-bool ProcessETag(const char* ETag){
-  for (int i = 0; i < webServer.headers(); i++){    
-    if(webServer.headerName(i).compareTo(F("If-None-Match")) == 0)
-      if(webServer.header(i).compareTo(ETag) == 0){
+bool ProcessETag(const char* ETag) {
+  for (int i = 0; i < webServer.headers(); i++) {
+    if (webServer.headerName(i).compareTo(F("If-None-Match")) == 0)
+      if (webServer.header(i).compareTo(ETag) == 0) {
         webServer.send(304, "text/plain", F("Not Modified"));
         Serial.println(String(F(" ")) + webServer.headerName(i) + F(": ") + webServer.header(i));
         Serial.println(F(" - Not Modified"));
         return true;
-      }    
+      }
   }
   webServer.sendHeader("ETag", ETag);
-  webServer.sendHeader("Cache-Control", "public");    
+  webServer.sendHeader("Cache-Control", "public");
   return false;
+}
+
+void ProcessSetupArguments() {
+  // /setup?x=123&y=321&inv=0&ap=1&t=10
+
+  bool valutationChanged = false;
+
+  for (uint8_t i = 0; i < webServer.args(); i++) {
+    Serial.println(String(F(" ")) + webServer.argName(i) + F(": ") + webServer.arg(i));
+
+    if (webServer.argName(i).compareTo(F("vx")) == 0) {
+      valuationX = webServer.arg(i).toInt();
+      valutationChanged = true;
+    }
+
+    if (webServer.argName(i).compareTo(F("vy")) == 0) {
+      valuationY = webServer.arg(i).toInt();
+      valutationChanged = true;
+    }
+
+    if (webServer.argName(i).compareTo(F("inv")) == 0) {
+      invertAxis = webServer.arg(i) == "1";
+      StoreInvertation();
+    }
+
+    if (webServer.argName(i).compareTo(F("ap")) == 0) {
+      useAcessPointMode = webServer.arg(i) == "1";
+      StoreAP();
+    }
+
+    if (webServer.argName(i).compareTo(F("t")) == 0) {
+      int i = webServer.arg(0).toInt();
+      if (i > 0 && i <= 90) {
+        levelThreshold = i;
+        StoreLevelThreshold();
+      }
+    }
+    if (valutationChanged)
+      StoreLevelValuation();
+  }
 }
 
 String toStringIp(IPAddress ip) {

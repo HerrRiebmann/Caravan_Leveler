@@ -1,15 +1,12 @@
 void WiFiBegin() {
   //Manually change between WiFi and Accesspoint. AP will be used as a fallback, after 5 seconds
-  if (UseAcessPointMode)
+  if (useAcessPointMode)
     CreateAccessPoint();
   else
     ConnectToAccessPoint();
 
   webServer.on("/", handle_root);
-  webServer.on("/level", handle_level);
-  webServer.on("/valuation", handle_valuation);
-  webServer.on("/threshold", handle_threshold);
-  webServer.on("/invertation", handle_invertation);
+  webServer.on("/level", handle_level);  
   webServer.on("/setup", handle_setup);
   webServer.on("/main.js", handle_script);
   webServer.on("/style.css", handle_style);
@@ -83,76 +80,26 @@ void handle_level() {
     webServer.send(400, "text/plain", "Gyro not initialized!");
     return;
   }
-  getLevel();
+  
+  //getLevel();
   String txt = String(invertAxis ? levelY : levelX);
   txt.concat("|");
   txt.concat(String(invertAxis ? levelX : levelY));
   txt.concat("|");
   txt.concat(String(levelThreshold));
   webServer.send(200, "text/plain", txt);
+
+  lastMillisClientAvailable = millis();
 }
 
-void handle_valuation() {
-  // /valuation?x=270&y=267
-  Serial.println(F("Handle Valuation"));
-
-  if (webServer.args() == 2) {
-    Serial.println(String(F(" ")) + webServer.argName(0) + F(": ") + webServer.arg(0));
-    Serial.println(String(F(" ")) + webServer.argName(1) + F(": ") + webServer.arg(1));
-    valuationX = webServer.arg(0).toInt();
-    valuationY = webServer.arg(1).toInt();
-    StoreLevelValuation();
-    String txt = "OK (";
-    txt.concat(String(valuationX));
-    txt.concat("/");
-    txt.concat(String(valuationY));
-    txt.concat(")");
-    webServer.send(200, "text/plain", txt);
-    return;
-  }
-  webServer.send(400, "text/plain", F("Parameter missing or out of Range!"));
-}
-
-void handle_threshold() {
-  // /threshold?v=10
-  Serial.println(F("Handle Threshold"));
-
-  if (webServer.args() == 1) {
-    Serial.print(String(F(" ")) + webServer.argName(0) + F(": ") + webServer.arg(0) + F("\n"));
-    int i = webServer.arg(0).toInt();
-    if (i > 0 && i <= 90) {
-      levelThreshold = i;
-      StoreLevelThreshold();
-      String txt = "Threshold OK (";
-      txt.concat(String(levelThreshold));
-      txt.concat(")");
-      webServer.send(200, "text/plain", txt);
-      return;
-    }
-  }
-  webServer.send(400, "text/plain", F("Parameter missing or out of Range!"));
-}
-
-void handle_invertation() {
-  // /invertation?v=1
-  Serial.println(F("Handle Invert Axis"));
-
-  if (webServer.args() == 1) {
-    Serial.print(String(F(" ")) + webServer.argName(0) + F(": ") + webServer.arg(0) + F("\n"));
-    invertAxis = webServer.arg(0) == "1";
-    StoreInvertation();
-    String txt = "Invert Axis OK (";
-    txt.concat(String(invertAxis));
-    txt.concat(")");
-    webServer.send(200, "text/plain", txt);
-    return;
-  }
-  webServer.send(400, "text/plain", F("Parameter missing or out of Range!"));
-}
-
-void handle_setup() {
+void handle_setup() {  
   // /setup
+    
   Serial.println(F("Handle Setup"));
+
+  //With arguments:
+  // /setup?x=123&y=321&inv=0&ap=1  
+  ProcessSetupArguments();
 
   String txt = String(accelInitialized);
   txt.concat("|");
@@ -161,13 +108,15 @@ void handle_setup() {
   txt.concat(String(valuationY));
   txt.concat("|");
   txt.concat(String(invertAxis));
+  txt.concat("|");
+  txt.concat(String(useAcessPointMode));
   webServer.send(200, "text/plain", txt);
 }
 
 void handle_script() {
   Serial.println(F("Handle Script"));
 
-  if(ProcessETag("201119-Script"))
+  if(ProcessETag("201120-Script"))
     return;
 
   String path = "/main.js";
@@ -182,7 +131,7 @@ void handle_script() {
 void handle_style() {
   Serial.println(F("Handle Style"));
 
-  if(ProcessETag("201119-Style"))
+  if(ProcessETag("20120-Style"))
     return;
 
   String path = "/style.css";

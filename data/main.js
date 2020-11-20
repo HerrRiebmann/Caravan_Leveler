@@ -3,17 +3,10 @@ document.addEventListener("DOMContentLoaded", function(){
     DrawLevel("X");
 	DrawLevel("Y");
 	var slider = document.getElementById("ThresholdSlider");
-	slider.oninput = function() {		
+	slider.oninput = function() {
 		document.getElementById("SliderValue").innerHTML = this.value;
 	};
-	slider.onchange = function() {
-		var oRequest = new XMLHttpRequest();
-		var sURL  = '/threshold?v=' + this.value;
-		oRequest.open("GET",sURL,true);	
-		oRequest.onerror = function (e) {SetOutput("Threshold failed!", true);};
-		oRequest.send(null);		
-	};
-	GetSetup();
+	SetSetup(false);
 });
 function GetLevel(){
 	var oRequest = new XMLHttpRequest();
@@ -22,71 +15,66 @@ function GetLevel(){
 	oRequest.onload = function (e) {
 	  if (oRequest.readyState === 4) {
 		if (oRequest.status === 200) {
-			var arr = oRequest.responseText.split("|");						
+			var arr = oRequest.responseText.split("|");
 			SetLevel(arr[0], arr[1], arr[2]);
 			if(!ADXL345_Initialized){
 				ADXL345_Initialized = true;
 				DrawLevel("X");
 				DrawLevel("Y");
-				SetOutput("", false);				
+				SetOutput("", false);
 			}
-		} else {			
-			SetLevel(0,0,10);			
+		} else {
+			SetLevel(0,0,10);
 			ADXL345_Initialized = false;
 			DrawLevel("X");
 			DrawLevel("Y");
-			SetOutput(oRequest.responseText, true);			
+			SetOutput(oRequest.responseText, true);
 		}
 	  }
 	};
-	oRequest.onerror = function (e) {		
+	oRequest.onerror = function (e) {
 		//Fake values on a computer. Referring to the ESP will alert a cross site scripting error
 		SetLevel(Math.floor(Math.random() * 90) * -1, Math.floor(Math.random() * 90), 10);
-		SetOutput("PC random values", false);	
+		SetOutput("PC random values", false);
 	};
 	oRequest.send(null);
 }
 function Calibrate(){
 	var oRequest = new XMLHttpRequest();
 	var sURL  = '/calibrate';
-	oRequest.open("GET",sURL,true);	
+	oRequest.open("GET",sURL,true);
 	oRequest.onload = function (e) {
 		if(oRequest.readyState === 4 && oRequest.status === 200){
-			SetOutput(oRequest.responseText, false);							
+			SetOutput(oRequest.responseText, false);
 			document.getElementById("Calibrate").style.backgroundColor = "#4CAF50";
 		}
 		else{
-			SetOutput(oRequest.responseText, true);			
+			SetOutput(oRequest.responseText, true);	
 			document.getElementById("Calibrate").style.backgroundColor = "#f44336";
-		}		
+		}
 	};
 	oRequest.onerror = function (e) {
-		SetOutput("Calibration Error!", true);					
+		SetOutput("Calibration Error!", true);
 		document.getElementById("Calibrate").style.backgroundColor = "#f44336";
 	};
 	oRequest.send(null);
 }
-function Valuation(){
+
+function SetSetup(submitData = true){
 	var oRequest = new XMLHttpRequest();
-	var sURL  = '/valuation?x=';
-	sURL += document.getElementById("ValutationX").value;
-	sURL += '&y=';
-	sURL += document.getElementById("ValutationY").value;
-	oRequest.open("GET",sURL,true);	
-	oRequest.onerror = function (e) {SetOutput("Valuation failed!", true);};
-	oRequest.send(null);
-}
-function InvertAxis(){
-	var oRequest = new XMLHttpRequest();
-	var sURL  = '/invertation?v=';
-	sURL += document.getElementById("InvertAxis").checked ? '1' : '0';	
-	oRequest.open("GET",sURL,true);	
-	oRequest.onerror = function (e) {SetOutput("Invertation failed!", true);};
-	oRequest.send(null);
-}
-function GetSetup(){
-	var oRequest = new XMLHttpRequest();
-	var sURL  = '/setup';	
+	var sURL  = '/setup';
+	if(submitData){
+		sURL += '?vx=';
+		sURL += document.getElementById("ValutationX").value;
+		sURL += '&vy=';
+		sURL += document.getElementById("ValutationY").value;
+		sURL += '&inv=';
+		sURL += document.getElementById("InvertAxis").checked ? '1' : '0';
+		sURL += '&ap=';
+		sURL += document.getElementById("Accesspoint").checked ? '1' : '0';
+		sURL += '&t=';
+		sURL += document.getElementById("ThresholdSlider").value;
+	}
 	oRequest.open("GET",sURL,true);
 	oRequest.onload = function (e) {
 		if(oRequest.readyState === 4 && oRequest.status === 200){
@@ -94,15 +82,20 @@ function GetSetup(){
 			ADXL345_Initialized = arr[0];
 			document.getElementById("ValutationX").value = arr[1];
 			document.getElementById("ValutationY").value = arr[2];
-			document.getElementById("InvertAxis").checked = arr[3];
+			document.getElementById("InvertAxis").checked = arr[3] == '1' ? true : false;
+			document.getElementById("Accesspoint").checked = arr[4] == '1' ? true : false;
+			document.getElementById("SaveBtn").style.backgroundColor = "#00e600";			
 		}
+	};
+	oRequest.onerror = function (e) {
+		SetOutput("Set Setup failed!", true);	
+		document.getElementById("SaveBtn").style.backgroundColor = "#FF0000";
 	}
-	oRequest.onerror = function (e) {SetOutput("Setup failed!", true);};
-	oRequest.send(null);
+		oRequest.send(null);
 }
 function SetLevel(x,y, threshold){
 	document.getElementById("LevelX").value = (x / 10).toFixed(1);
-	document.getElementById("LevelY").value = (y / 10).toFixed(1);		
+	document.getElementById("LevelY").value = (y / 10).toFixed(1);
 	if(document.getElementById("ThresholdValue").innerHTML != threshold){
 		document.getElementById("ThresholdSlider").value = threshold;
 		document.getElementById("ThresholdValue").innerHTML  = threshold;
@@ -117,10 +110,10 @@ function SetDots(desc){
 	var dot = document.getElementById("Dot"+desc);
 	dot.style.margin = "0px 0px 0px 0px";
 	dot.style.top = can.getBoundingClientRect().top + (can.height / 2 - dot.clientHeight / 2);
-	dot.style.left = can.getBoundingClientRect().left + (can.width / 2 - dot.clientWidth / 2);	
+	dot.style.left = can.getBoundingClientRect().left + (can.width / 2 - dot.clientWidth / 2);
 	var value = parseFloat(txt.value);
 	var threshold = document.getElementById("ThresholdSlider").value;		
-	var max = desc == "X" ? (can.height/ 2 - dot.clientHeight / 2) : (can.width / 2 - dot.clientWidth / 2);		
+	var max = desc == "X" ? (can.height/ 2 - dot.clientHeight / 2) : (can.width / 2 - dot.clientWidth / 2);
 	value = (max / threshold) * value;
 	if(value < max * -1)
 		value = max * -1;
@@ -129,16 +122,16 @@ function SetDots(desc){
 	if(desc == "X")
 		dot.style.top = parseInt(dot.style.top, 10) + value + "px";
 	if(desc == "Y")
-		dot.style.left = parseInt(dot.style.left, 10) + value + "px";	
+		dot.style.left = parseInt(dot.style.left, 10) + value + "px";
 	SetColor(txt, (value / max) * 100);
 }
-function DrawLevel(desc){	
+function DrawLevel(desc){
 	var c = document.getElementById("Level" + desc + "Canvas");
 	var height = c.height;
 	var width = c.width;
 	var ctx = c.getContext("2d");
 	ctx.beginPath();
-	ctx.rect(0, 0, width, height);	
+	ctx.rect(0, 0, width, height);
 	ctx.fillStyle = ADXL345_Initialized ? "#CCFF99" : "#FF0000";
 	ctx.fillRect(2, 2, width-4, height-4);
 	
@@ -155,7 +148,7 @@ function DrawLevel(desc){
 		heightTmp += 10;
 	else
 		widthTmp += 10;
-	ctx.moveTo(widthTmp, heightTmp);	
+	ctx.moveTo(widthTmp, heightTmp);
 	if(desc == "Y")
 		ctx.lineTo(widthTmp, height);
 	else
@@ -174,19 +167,20 @@ function DrawLevel(desc){
 		heightTmp += 10;
 	else
 		widthTmp += 10;
-	ctx.moveTo(widthTmp, heightTmp);	
+	ctx.moveTo(widthTmp, heightTmp);
 	if(desc == "Y")
 		ctx.lineTo(widthTmp, height);
 	else
 		ctx.lineTo(width, heightTmp);
 	ctx.stroke();
 }
-function SetColor(element, value){		
+function SetColor(element, value){
 	if(value < 0)
 		value = value * -1;	
 	if(value > 100)
 		value = 100;
-	let colour = hsl_col_perc(value, 120, 0);//Green -> Red
+	//Green -> Red
+	var colour = hsl_col_perc(value, 120, 0);
 	element.style.backgroundColor = colour;
 }
 function hsl_col_perc(percent, start, end) {
@@ -198,6 +192,7 @@ function hsl_col_perc(percent, start, end) {
 }
 function SetSetupVisibility(){	
 	document.getElementById("SetupContainer").style.display = "block";
+	document.getElementById("SaveBtn").style.backgroundColor = "#008CBA";
 }
 function SetOutput(text, error){
 	var output = document.getElementById("Output");

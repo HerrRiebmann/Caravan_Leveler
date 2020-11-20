@@ -1,43 +1,49 @@
 <html lang="en">
-<head>
-<title>Caravan - Leveler</title>
-<meta charset="UTF-8" /> 
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="stylesheet" type="text/css" href="style.css" />
-<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-<link rel="icon" href="favicon.ico" type="image/x-icon" />
-<script src="main.js"></script>
-</head>
-<body OnLoad="window.setInterval(GetLevel, 500)">
-<noscript><h2 style="color:red;">JavaScript is disabled!!!</h2></noscript>
-<div class="card" id="card">
-<h1>Knaus Sport &amp; Fun &#9878;&#65039;</h1>
-<input type="text" id="LevelX" size="2" disabled="disabled" /><br/>
-<canvas id="LevelXCanvas" width="50" height="180"></canvas><br/><br/>
-<canvas id="LevelYCanvas" width="180" height="50"></canvas><br/>
-<input type="text" id="LevelY" size="2" disabled="disabled" />
-<span class="dotX" id="DotX"></span><span class="dotY" id="DotY"></span>
-<p><button onClick="Calibrate()" id="Calibrate">Calibrate</button></p>
-<span style="font-weight:bold;color:white;cursor:pointer" OnClick="SetSetupVisibility()">Settings</span>
-<br/><span id="ThresholdValue" style="visibility:hidden"></span>
-<div id="SetupContainer" class="modal">
-<span class="close" onClick="CloseModal()">&times;</span>
-<div class="modal-content">
-Threshold:<br/>
-<span id="SliderValue" style="font-weight:bold;color:#008CBA"></span>&#176;<br/>
-<input type="range" min="1" max="90" value="0" class="slider" id="ThresholdSlider" />
-<p>Invert Axis: <input type="checkbox" value="0" id="InvertAxis" onclick="InvertAxis()" /></p>
-</div>
-<div class="modal-content">
-Valutation:<br/>
-<span style="font-weight:bold;color:#008CBA">
-X: <input type="text" value="271" id="ValutationX" /><br/>
-Y: <input type="text" value="267" id="ValutationY" />
-</span>
-<p><button onClick="Valuation()" id="ValutationBtn">Set Valutation</button></p>
-</div>
-</div>
-</div>
-<span id="Output" style="font-weight:bold;color:#008CBA"></span>
-</body>
+   <head>
+      <title>Caravan - Leveler</title>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <link rel="stylesheet" type="text/css" href="style.css" />
+      <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+      <link rel="icon" href="favicon.ico" type="image/x-icon" />
+      <script src="main.js"></script>
+   </head>
+   <body OnLoad="window.setInterval(GetLevel, 500)">
+      <noscript>
+         <h2 style="color:red;">JavaScript is disabled!!!</h2>
+      </noscript>
+      <div class="card" id="card">
+         <h1>Knaus Sport &amp; Fun &#9878;&#65039;</h1>
+         <input type="text" id="LevelX" size="2" disabled="disabled" /><br/>
+         <canvas id="LevelXCanvas" width="50" height="180"></canvas>
+         <br/><br/>
+         <canvas id="LevelYCanvas" width="180" height="50"></canvas>
+         <br/>
+         <input type="text" id="LevelY" size="2" disabled="disabled" />
+         <span class="dotX" id="DotX"></span><span class="dotY" id="DotY"></span>
+         <p><button onClick="Calibrate()" id="Calibrate">Calibrate</button></p>
+         <span style="font-weight:bold;color:white;cursor:pointer" OnClick="SetSetupVisibility()">Settings</span>
+         <br/><span id="ThresholdValue" style="visibility:hidden"></span>
+         <div id="SetupContainer" class="modal">
+            <span class="close" onClick="CloseModal()">&times;</span>
+            <div class="modal-content">
+               Threshold:<br/>
+               <span id="SliderValue" style="font-weight:bold;color:#008CBA"></span>&#176;<br/>
+               <input type="range" min="1" max="90" value="0" class="slider" id="ThresholdSlider" />
+               <p>Invert Axis: <input type="checkbox" value="0" id="InvertAxis" /></p>
+			   <p>Use Accespoint: <input type="checkbox" value="0" id="Accesspoint" /></p>
+            </div>
+            <div class="modal-content">
+               Valutation:<br/>
+               <span style="font-weight:bold;color:#008CBA">
+               X: <input type="text" value="271" id="ValutationX" /><br/>
+               Y: <input type="text" value="267" id="ValutationY" />
+               </span>
+			   <br/><br/>
+               <button onClick="SetSetup()" id="SaveBtn">Save</button>
+            </div>
+         </div>
+      </div>
+      <span id="Output" style="font-weight:bold;color:#008CBA"></span>
+   </body>
 </html>

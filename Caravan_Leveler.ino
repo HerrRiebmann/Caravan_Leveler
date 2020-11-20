@@ -13,6 +13,7 @@ Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
 #define EEPROM_VALUATION_Y 6
 #define EEPROM_LEVEL_THRESHOLD 8
 #define EEPROM_LEVEL_INVERTATION 9
+#define EEPROM_LEVEL_ACCESSPOINT 10
 
 //Webserver
 #include <WiFi.h>
@@ -20,7 +21,6 @@ Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
 const char* ssid = "SSID";
 const char* password = "PASSWORD";
 
-#define UseAcessPointMode true
 WebServer webServer(80);
 
 #include <DNSServer.h>
@@ -30,27 +30,26 @@ DNSServer dnsServer;
 bool accelInitialized = false;
 int levelX = 0;
 int levelY = 0;
-int lastLevelX = 0xFFFF;
-int lastLevelY = 0xFFFF;
 int calibrationX = -150;
 int calibrationY = -25;
 int valuationX = 271;
 int valuationY = 267;
 uint8_t levelThreshold = 10;
 bool invertAxis = false;
+bool useAcessPointMode = false;
+
+long lastMillis = 0;
+long lastMillisClientAvailable = 0;
 
 void setup() {
   SerialBegin();
   Adxl345Begin();
-  EepromBegin();
+  EepromBegin();  
 
-  LoadLevel();
-  LoadValuation();
-  LoadLevelThreshold();
-  LoadInvertation();
+  LoadData();
 
   SpiffsBegin();
-  WiFiBegin();
+  WiFiBegin();  
 }
 
 void loop() {
@@ -59,5 +58,12 @@ void loop() {
 
   //DNS
   dnsServer.processNextRequest();
+
+  if(millis() - lastMillis > 200){
+    //Only update when someone is listening:
+    if(millis() - lastMillisClientAvailable < 1000)
+      getLevel();
+    lastMillis = millis();
+  }
 }
 
