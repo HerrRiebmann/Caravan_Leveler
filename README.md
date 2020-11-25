@@ -56,6 +56,8 @@ Settings:
 
 **Invert Axis** swaps X- and Y-Axis
 
+**Use Accesspoint** or connect to an existing WiFi (_SSID and Pasword required in code_)
+
 **Valutation** represents the values range from 0° to 90° (_or -90° to 0°_)
 
 
