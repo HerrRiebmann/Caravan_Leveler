@@ -40,6 +40,11 @@ GND | OUT-
 To upload the HTML, JS and CSS files, I´ve used the [Arduino ESP32 filesystem uploader](https://github.com/me-no-dev/arduino-esp32fs-plugin)
 You can find the latest release [here](https://github.com/me-no-dev/arduino-esp32fs-plugin/releases/) and a tutorial on [RandomNerdTutorials](https://randomnerdtutorials.com/install-esp32-filesystem-uploader-arduino-ide/)
 
+## Libraries
+* Adafruit Unified Sensor (1.0.3)
+* Adafruit ADXL345 (1.2.2)
+
+
 ## Images
 
 Captive Portal (_Android 10_):
@@ -60,6 +65,11 @@ Settings:
 
 **Valutation** represents the values range from 0° to 90° (_or -90° to 0°_)
 
+**Rec** starts recording the minimum and maximum values on both axis. Tip the board over to 90 degrees on every side. Afterwards, hit **End** to see those values.
+
+**Save** will store all values above, to the ESP32
+
+**Upload** loads a file to the SPIFFS. To overwrite existing files, the filename must be equal (see [/data](https://github.com/HerrRiebmann/Caravan_Leveler/tree/main/data))!
 
 3D Printed case with wood filament:
 
@@ -71,6 +81,10 @@ Settings:
 Hotspot (_Android 4.4.3_):
 
 ![Hotspot](/Images/Hotspot.jpg)
+
+## OTA (Over the Air Update)
+You should see the ESP32 in Arduino IDE under Tools -> Port -> Network-Interfaces (Sport&Fun Leveler at _IP-Adress_)
+For more information see [RandomNerdTutorials](https://randomnerdtutorials.com/esp32-over-the-air-ota-programming/)
 
 ## Disclamer
 The ADXL345 is **not** a proper device to show exact degrees! It´s an accelerometer, which goal was to measure movements by gravitation.
