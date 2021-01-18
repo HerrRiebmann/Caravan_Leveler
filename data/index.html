@@ -32,18 +32,28 @@
                <input type="range" min="1" max="90" value="0" class="slider" id="ThresholdSlider" />
                <p>Invert Axis: <input type="checkbox" value="0" id="InvertAxis" /></p>
 			   <p>Use Accespoint: <input type="checkbox" value="0" id="Accesspoint" /></p>
-            </div>
-            <div class="modal-content">
-               Valutation:<br/>
+			   Valutation:<br/>
                <span style="font-weight:bold;color:#008CBA">
-               X: <input type="text" value="271" id="ValutationX" /><br/>
-               Y: <input type="text" value="267" id="ValutationY" />
+               X: <input type="text" value="271" id="ValutationX" size="2" />
+               Y: <input type="text" value="267" id="ValutationY" size="2" />
                </span>
+			   <button onClick="MeasureValuation()" id="MeasureBtn" class="buttonRec">Rec</button>			   
 			   <br/><br/>
                <button onClick="SetSetup()" id="SaveBtn">Save</button>
+            </div>
+            <div class="modal-content">               
+				Files:<br/>
+			   <form action="upload" method="post" enctype="multipart/form-data" id="UploadForm">			   
+					<div class="upload-btn-wrapper">
+						<button type="submit">Upload</button>
+						<!--<input type="file" name="myfile" onchange="this.form.submit()"/>-->
+						<input type="file" name="myfile" onchange="Upload()" id="fileInput"/>
+					</div>
+				</form>
             </div>
          </div>
       </div>
       <span id="Output" style="font-weight:bold;color:#008CBA"></span>
+	  <div class="dimmer"></div>
    </body>
 </html>

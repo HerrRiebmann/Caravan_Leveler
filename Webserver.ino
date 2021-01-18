@@ -4,21 +4,19 @@ void WiFiBegin() {
     CreateAccessPoint();
   else
     ConnectToAccessPoint();
-
-  webServer.on("/", handle_root);
-  webServer.on("/level", handle_level);  
-  webServer.on("/setup", handle_setup);
-  webServer.on("/main.js", handle_script);
-  webServer.on("/style.css", handle_style);
-  webServer.on("/favicon.ico", handle_icon);
-  webServer.on("/sport-and-fun_480-ql.png", handle_img);
+  
+  webServer.on("/level", handle_level);
+  webServer.on("/setup", handle_setup); 
   webServer.on("/calibrate", handle_calibrate);
+  webServer.on("/valuate", handle_valuation);
+  webServer.on("/upload",  HTTP_POST,[](){ webServer.send(200);}, handle_fileupload);
   webServer.on("/generate_204", handle_root);  //Android captive portal. Maybe not needed. Might be handled by notFound handler.
   webServer.on("/fwlink", handle_root);   //Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
-  webServer.onNotFound(handleNotFound);
+  
+  webServer.onNotFound(handleFileRead);
 
   const char* Headers[] = {"If-None-Match"};
-  webServer.collectHeaders(Headers, sizeof(Headers)/ sizeof(Headers[0]));
+  webServer.collectHeaders(Headers, sizeof(Headers) / sizeof(Headers[0]));
 
   webServer.begin();
   Serial.println(F("HTTP webServer started"));
@@ -51,7 +49,7 @@ void CreateAccessPoint() {
   IPAddress subnet(255, 255, 255, 0);
 
   WiFi.mode(WIFI_AP);
-  WiFi.softAP("Sport&Fun Leveler");
+  WiFi.softAP(deviceName);
   delay(500);
   WiFi.softAPConfig(local_ip, gateway, subnet);
   delay(500);
@@ -80,7 +78,7 @@ void handle_level() {
     webServer.send(400, "text/plain", "Gyro not initialized!");
     return;
   }
-  
+
   //getLevel();
   String txt = String(invertAxis ? levelY : levelX);
   txt.concat("|");
@@ -92,13 +90,13 @@ void handle_level() {
   lastMillisClientAvailable = millis();
 }
 
-void handle_setup() {  
+void handle_setup() {
   // /setup
-    
+
   Serial.println(F("Handle Setup"));
 
   //With arguments:
-  // /setup?x=123&y=321&inv=0&ap=1  
+  // /setup?x=123&y=321&inv=0&ap=1
   ProcessSetupArguments();
 
   String txt = String(accelInitialized);
@@ -113,67 +111,6 @@ void handle_setup() {
   webServer.send(200, "text/plain", txt);
 }
 
-void handle_script() {
-  Serial.println(F("Handle Script"));
-
-  if(ProcessETag("201120-Script"))
-    return;
-
-  String path = "/main.js";
-  if (!SPIFFS.exists(path))
-    return;
-
-  File f = SPIFFS.open(path);
-  webServer.streamFile(f, "text/javascript");
-  f.close();
-}
-
-void handle_style() {
-  Serial.println(F("Handle Style"));
-
-  if(ProcessETag("20120-Style"))
-    return;
-
-  String path = "/style.css";
-  if (!SPIFFS.exists(path))
-    return;
-
-  File f = SPIFFS.open(path);
-  webServer.streamFile(f, "text/css");
-  f.close();
-}
-
-void handle_icon() {
-  Serial.println(F("Handle Icon"));
-
-  if(ProcessETag("201119-Favicon"))
-    return;
-    
-  String path = "/favicon.ico";
-  if (!SPIFFS.exists(path))
-    return;
-
-  File f = SPIFFS.open(path);
-  webServer.streamFile(f, "image/x-icon");
-  f.close();
-}
-
-void handle_img() {
-  Serial.println(F("Handle Img"));
-
-  //Etag request:  
-  if(ProcessETag("201119-SportAndFun"))
-    return;
-
-  String path = "/sport-and-fun_480-ql.png";
-  if (!SPIFFS.exists(path))
-    return;
-
-  File f = SPIFFS.open(path);    
-  webServer.streamFile(f, "image/png");
-  f.close();
-}
-
 void handle_calibrate() {
   Serial.println(F("Handle Calibration"));
   CalibrateLevel();
@@ -185,6 +122,21 @@ void handle_calibrate() {
   webServer.send(200, "text/plaint", result);
 }
 
+void handle_valuation() {
+  Serial.println(F("Handle Valuation"));  
+  String result = "Calibration ";
+  if(valuationActive)
+    result.concat("stopped");
+  else {
+    minValuationX = 0;
+    minValuationY = 0;
+    maxValuationX = 0;
+    maxValuationY = 0;
+    result.concat("started");
+  }
+  valuationActive = !valuationActive; 
+  webServer.send(200, "text/plaint", result);
+}
 void handleNotFound() {
   Serial.println(F("HandleNotFound"));
 
@@ -216,7 +168,7 @@ boolean captivePortal() {
   Serial.print(F("Captive Check: "));
   Serial.println(webServer.hostHeader());
   if (!isIp(webServer.hostHeader())) {
-    Serial.println("Request redirected to captive portal");    
+    Serial.println("Request redirected to captive portal");
     webServer.sendHeader("Location", String("http://") + toStringIp(webServer.client().localIP()), true);
     webServer.send(302, "text/plain", "");   // Empty content inhibits Content-length header so we have to close the socket ourselves.
     webServer.client().stop(); // Stop is needed because we sent no content length

@@ -38,8 +38,7 @@ bool ProcessETag(const char* ETag) {
     if (webServer.headerName(i).compareTo(F("If-None-Match")) == 0)
       if (webServer.header(i).compareTo(ETag) == 0) {
         webServer.send(304, "text/plain", F("Not Modified"));
-        Serial.println(String(F(" ")) + webServer.headerName(i) + F(": ") + webServer.header(i));
-        Serial.println(F(" - Not Modified"));
+        Serial.println(String(F("\t")) + webServer.headerName(i) + F(": ") + webServer.header(i));        
         return true;
       }
   }

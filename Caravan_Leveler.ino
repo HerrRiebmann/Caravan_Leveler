@@ -27,6 +27,11 @@ WebServer webServer(80);
 const byte DNS_PORT = 53;
 DNSServer dnsServer;
 
+//Over the Air Update
+#include <ArduinoOTA.h>
+
+const char deviceName[] = "Sport&Fun Leveler";
+
 bool accelInitialized = false;
 int levelX = 0;
 int levelY = 0;
@@ -34,6 +39,7 @@ int calibrationX = -150;
 int calibrationY = -25;
 int valuationX = 271;
 int valuationY = 267;
+bool valuationActive = false;
 uint8_t levelThreshold = 10;
 bool invertAxis = false;
 bool useAcessPointMode = false;
@@ -49,7 +55,8 @@ void setup() {
   LoadData();
 
   SpiffsBegin();
-  WiFiBegin();  
+  WiFiBegin();
+  setupOTA();
 }
 
 void loop() {
@@ -59,6 +66,9 @@ void loop() {
   //DNS
   dnsServer.processNextRequest();
 
+  //OTA
+  ArduinoOTA.handle();
+  
   if(millis() - lastMillis > 200){
     //Only update when someone is listening:
     if(millis() - lastMillisClientAvailable < 1000)

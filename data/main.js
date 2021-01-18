@@ -1,4 +1,5 @@
 var ADXL345_Initialized = true;
+var PCVersion = false;
 document.addEventListener("DOMContentLoaded", function(){
     DrawLevel("X");
 	DrawLevel("Y");
@@ -9,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	SetSetup(false);
 });
 function GetLevel(){
+	//if(PCVersion)	return;
 	var oRequest = new XMLHttpRequest();
 	var sURL  = '/level';
 	oRequest.open("GET",sURL,true);	
@@ -33,8 +35,9 @@ function GetLevel(){
 	  }
 	};
 	oRequest.onerror = function (e) {
+		PCVersion = true;
 		//Fake values on a computer. Referring to the ESP will alert a cross site scripting error
-		SetLevel(Math.floor(Math.random() * 90) * -1, Math.floor(Math.random() * 90), 10);
+		SetLevel(Math.floor(Math.random() * 90) * -1, Math.floor(Math.random() * 90), 10);		
 		SetOutput("PC random values", false);
 	};
 	oRequest.send(null);
@@ -84,7 +87,10 @@ function SetSetup(submitData = true){
 			document.getElementById("ValutationY").value = arr[2];
 			document.getElementById("InvertAxis").checked = arr[3] == '1' ? true : false;
 			document.getElementById("Accesspoint").checked = arr[4] == '1' ? true : false;
-			document.getElementById("SaveBtn").style.backgroundColor = "#00e600";			
+			if(submitData){
+				document.getElementById("SaveBtn").style.backgroundColor = "#00e600";
+				ResetControlsDelayed();	
+			}
 		}
 	};
 	oRequest.onerror = function (e) {
@@ -92,6 +98,35 @@ function SetSetup(submitData = true){
 		document.getElementById("SaveBtn").style.backgroundColor = "#FF0000";
 	}
 		oRequest.send(null);
+}
+function MeasureValuation() {
+	var btn = document.getElementById("MeasureBtn");
+	var measuring = btn.innerHTML == "Rec";
+	btn.innerHTML = measuring ? "End"	: "Rec";
+	btn.style.backgroundColor = measuring ? "#f44336" : "#008CBA";
+	var oRequest = new XMLHttpRequest();
+	var sURL  = '/valuate';
+	oRequest.open("GET",sURL,true);
+	oRequest.onload = function (e) {
+		if(oRequest.readyState === 4 && oRequest.status === 200){						
+			SetOutput(oRequest.responseText, false);
+		}
+		else{			
+			SetOutput("Recording Error", true);
+		}
+	};
+	oRequest.onerror = function (e) {		
+		SetOutput("Recording Error", true);
+	};
+	oRequest.send(null);	
+	if(!measuring)		
+		SetSetup(false);	
+}
+function Upload(){
+	document.getElementsByClassName('dimmer')[0].style.display = 'block';	
+	document.body.style.cursor = 'progress';
+	if(!PCVersion)
+		document.getElementById("UploadForm").submit();
 }
 function SetLevel(x,y, threshold){
 	document.getElementById("LevelX").value = (x / 10).toFixed(1);
@@ -109,8 +144,9 @@ function SetDots(desc){
 	var txt = document.getElementById("Level"+desc);
 	var dot = document.getElementById("Dot"+desc);
 	dot.style.margin = "0px 0px 0px 0px";
-	dot.style.top = can.getBoundingClientRect().top + (can.height / 2 - dot.clientHeight / 2);
-	dot.style.left = can.getBoundingClientRect().left + (can.width / 2 - dot.clientWidth / 2);
+	//Dot + Border (4px)
+	dot.style.top = can.getBoundingClientRect().top + (can.height / 2 - (dot.clientHeight + 4) / 2);
+	dot.style.left = can.getBoundingClientRect().left + (can.width / 2 - (dot.clientWidth + 4) / 2);
 	var value = parseFloat(txt.value);
 	var threshold = document.getElementById("ThresholdSlider").value;		
 	var max = desc == "X" ? (can.height/ 2 - dot.clientHeight / 2) : (can.width / 2 - dot.clientWidth / 2);
@@ -198,6 +234,17 @@ function SetOutput(text, error){
 	var output = document.getElementById("Output");
 	output.innerHTML = text;
 	output.style.color = error? "#FF0000" : "#008CBA";
+	ResetControlsDelayed();
+}
+function ResetControlsDelayed() {
+	setTimeout(ResetControls,3000);
+}
+function ResetControls() {
+	var output = document.getElementById("Output");
+	output.innerHTML = "";
+	output.style.color = "#008CBA";
+	document.getElementById("Calibrate").style.backgroundColor = "#008CBA";
+	document.getElementById("SaveBtn").style.backgroundColor = "#008CBA";
 }
 function CloseModal() {  
   document.getElementById("SetupContainer").style.display = "none";

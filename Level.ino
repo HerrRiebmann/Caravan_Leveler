@@ -2,6 +2,11 @@ void getLevel() {
   if (!accelInitialized)
     return;
 
+  if(valuationActive){
+    Valutation();
+    return;
+  }
+
   int x = accel.getX();
   int y = accel.getY();
   int z = accel.getZ();
@@ -19,7 +24,7 @@ void getLevel() {
   Serial.print(levelX);
   Serial.print(" Y: ");
   Serial.print(levelY);
-  Serial.print(" (");
+  Serial.print("\t(");
   Serial.print(x);
   Serial.print(" / ");
   Serial.print(y);
@@ -28,7 +33,7 @@ void getLevel() {
   Serial.print(")");  
   levelX = deepPassX(levelX);
   levelY = deepPassY(levelY);
-  Serial.print(" DeepPass ");
+  Serial.print("\tDeepPass ");
   Serial.print(levelX);
   Serial.print(" / ");
   Serial.println(levelY);
