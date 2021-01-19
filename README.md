@@ -7,16 +7,16 @@ An ESP WROOM32 will create a hotspot with a captive portal.
 This captive portal will force the phone to open up a login-site (_which represents the water level_).
 
 ## Contents
-[Usage](#usage)  
-[3D Case](#3D-Case)
-[Things](#Things)
-[HardwareComponents](#HardwareComponents)
- [Wiring](#Wiring)
- [SPIFFS Upload](#SPIFFS-Upload)
- [Libraries](#Libraries)
- [OTA (Over the Air Update)](#OTA-Over-the-Air-Update)
-[Compatibility](#Compatibility)
-[Disclaimer](#Disclaimer)
+* [Usage](#usage)
+* [3D Case](#3D-Case)
+* [Things](#Things)
+* [HardwareComponents](#HardwareComponents)
+  * [Wiring](#Wiring)
+  * [SPIFFS Upload](#SPIFFS-Upload)
+  * [Libraries](#Libraries)
+  * [OTA (Over the Air Update)](#OTA-Over-the-Air-Update)
+* [Compatibility](#Compatibility)
+* [Disclaimer](#Disclaimer)
 
 ### Intention
 The intention was, to attach this to my caravan (_Knaus Sport & Fun_) and provide it with 12V on-board voltage.
