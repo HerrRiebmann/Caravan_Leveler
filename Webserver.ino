@@ -12,6 +12,7 @@ void WiFiBegin() {
   webServer.on("/upload",  HTTP_POST,[](){ webServer.send(200);}, handle_fileupload);
   webServer.on("/generate_204", handle_root);  //Android captive portal. Maybe not needed. Might be handled by notFound handler.
   webServer.on("/fwlink", handle_root);   //Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
+  webServer.on("/success.txt", handle_success); //detectportal.firefox.com/sucess.txt
   
   webServer.onNotFound(handleFileRead);
 
@@ -137,6 +138,7 @@ void handle_valuation() {
   valuationActive = !valuationActive; 
   webServer.send(200, "text/plaint", result);
 }
+
 void handleNotFound() {
   Serial.println(F("HandleNotFound"));
 
@@ -162,6 +164,11 @@ void handleNotFound() {
   webServer.sendHeader("Pragma", "no-cache");
   webServer.sendHeader("Expires", "-1");
   webServer.send(404, "text/plain", message);
+}
+
+void handle_success(){
+  Serial.println(F("Handle success.txt"));
+  webServer.send(200, "text/plain", "success");
 }
 
 boolean captivePortal() {

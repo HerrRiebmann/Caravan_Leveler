@@ -145,8 +145,8 @@ function SetDots(desc){
 	var dot = document.getElementById("Dot"+desc);
 	dot.style.margin = "0px 0px 0px 0px";
 	//Dot + Border (4px)
-	dot.style.top = can.getBoundingClientRect().top + (can.height / 2 - (dot.clientHeight + 4) / 2);
-	dot.style.left = can.getBoundingClientRect().left + (can.width / 2 - (dot.clientWidth + 4) / 2);
+	dot.style.top = can.getBoundingClientRect().top + (can.height / 2 - (dot.clientHeight + 4) / 2) + "px";
+	dot.style.left = can.getBoundingClientRect().left + (can.width / 2 - (dot.clientWidth + 4) / 2) + "px";
 	var value = parseFloat(txt.value);
 	var threshold = document.getElementById("ThresholdSlider").value;		
 	var max = desc == "X" ? (can.height/ 2 - dot.clientHeight / 2) : (can.width / 2 - dot.clientWidth / 2);
