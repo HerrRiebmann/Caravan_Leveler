@@ -1,3 +1,4 @@
+"use strict";
 var ADXL345_Initialized = true;
 var PCVersion = false;
 document.addEventListener("DOMContentLoaded", function(){
@@ -96,7 +97,7 @@ function SetSetup(submitData = true){
 	oRequest.onerror = function (e) {
 		SetOutput("Set Setup failed!", true);	
 		document.getElementById("SaveBtn").style.backgroundColor = "#FF0000";
-	}
+	};
 		oRequest.send(null);
 }
 function MeasureValuation() {
