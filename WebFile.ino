@@ -24,6 +24,12 @@ void handleFileRead() {
   if (path.endsWith("/"))
     path.concat("index.html");
 
+  // If request is captive request, followed with a GUID
+  if(path.startsWith("/generate_204")){    
+    redirect();
+    return;
+  }
+
   if (SPIFFS.exists(path)) {
     File file = SPIFFS.open(path, "r");
     String fileSize = String(file.size());

@@ -10,10 +10,15 @@ void WiFiBegin() {
   webServer.on("/calibrate", handle_calibrate);
   webServer.on("/valuate", handle_valuation);
   webServer.on("/upload",  HTTP_POST,[](){ webServer.send(200);}, handle_fileupload);
-  webServer.on("/generate_204", handle_root);  //Android captive portal. Maybe not needed. Might be handled by notFound handler.
-  webServer.on("/fwlink", handle_root);   //Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
-  webServer.on("/success.txt", handle_success); //detectportal.firefox.com/sucess.txt
+
+  //Allways redirect to captive portal. Request comes with IP (8.8.8.8) or URL (connectivitycheck.XXX / captive.apple / etc.)  
+  webServer.on("/generate_204", redirect);    //Android captive portal.
+  webServer.on("/fwlink", redirect);   //Microsoft captive portal.
   
+  webServer.on("/connecttest.txt", redirect); //www.msftconnecttest.com  
+  webServer.on("/hotspot-detect.html", redirect); //captive.apple.com
+  
+  webServer.on("/success.txt", handle_success); //detectportal.firefox.com/sucess.txt
   webServer.onNotFound(handleFileRead);
 
   const char* Headers[] = {"If-None-Match"};
@@ -63,7 +68,12 @@ void CreateAccessPoint() {
 }
 
 void handle_root() {
+  // /
+  // /index.html  
   Serial.println(F("Handle Root"));
+
+  PrintIncomingRequest();
+  
   String path = "/index.html";
   if (!SPIFFS.exists(path))
     return;
@@ -80,7 +90,6 @@ void handle_level() {
     return;
   }
 
-  //getLevel();
   String txt = String(invertAxis ? levelY : levelX);
   txt.concat("|");
   txt.concat(String(invertAxis ? levelX : levelY));
@@ -93,7 +102,6 @@ void handle_level() {
 
 void handle_setup() {
   // /setup
-
   Serial.println(F("Handle Setup"));
 
   //With arguments:
@@ -142,9 +150,7 @@ void handle_valuation() {
 void handleNotFound() {
   Serial.println(F("HandleNotFound"));
 
-  for (uint8_t i = 0; i < webServer.args(); i++) {
-    Serial.println(String(F(" ")) + webServer.argName(i) + F(": ") + webServer.arg(i) + F("\n"));
-  }
+  PrintIncomingRequest();
 
   if (captivePortal())
     return;
@@ -175,11 +181,28 @@ boolean captivePortal() {
   Serial.print(F("Captive Check: "));
   Serial.println(webServer.hostHeader());
   if (!isIp(webServer.hostHeader())) {
-    Serial.println("Request redirected to captive portal");
-    webServer.sendHeader("Location", String("http://") + toStringIp(webServer.client().localIP()), true);
-    webServer.send(302, "text/plain", "");   // Empty content inhibits Content-length header so we have to close the socket ourselves.
-    webServer.client().stop(); // Stop is needed because we sent no content length
+    Serial.println("-Request redirected to captive portal");
+    redirect();
     return true;
   }
   return false;
 }
+
+void redirect(){
+  webServer.sendHeader("Location", String("http://") + toStringIp(webServer.client().localIP()), true);
+  webServer.send(302, "text/plain", "");   // Empty content inhibits Content-length header so we have to close the socket ourselves.
+  webServer.client().stop(); // Stop is needed because we sent no content length
+}
+
+void PrintIncomingRequest(){  
+  Serial.println(webServer.hostHeader());
+  Serial.print("  ");
+  Serial.println(webServer.uri());
+  
+  for (uint8_t i = 0; i < webServer.args(); i++)
+    Serial.println(String(F(" ")) + webServer.argName(i) + F(": ") + webServer.arg(i) + F("\n"));
+  
+  for (int i = 0; i < webServer.headers(); i++)
+    Serial.println(String(F("\t")) + webServer.headerName(i) + F(": ") + webServer.header(i));  
+}
+

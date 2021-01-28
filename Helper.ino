@@ -23,13 +23,15 @@ void EepromBegin() {
 }
 
 boolean isIp(String str) {
-  Serial.println("IsIP");
+  Serial.print("-IsIP: ");
   for (size_t i = 0; i < str.length(); i++) {
     int c = str.charAt(i);
     if (c != '.' && (c < '0' || c > '9')) {
+      Serial.println("false");
       return false;
     }
   }
+  Serial.println("true");
   return true;
 }
 
