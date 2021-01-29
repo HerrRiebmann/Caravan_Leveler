@@ -63,7 +63,6 @@ function Calibrate(){
 	};
 	oRequest.send(null);
 }
-
 function SetSetup(submitData = true){
 	var oRequest = new XMLHttpRequest();
 	var sURL  = '/setup';
@@ -87,7 +86,7 @@ function SetSetup(submitData = true){
 			document.getElementById("ValutationX").value = arr[1];
 			document.getElementById("ValutationY").value = arr[2];
 			document.getElementById("InvertAxis").checked = arr[3] == '1' ? true : false;
-			document.getElementById("Accesspoint").checked = arr[4] == '1' ? true : false;
+			document.getElementById("Accesspoint").checked = arr[4] == '1' ? true : false;			
 			if(submitData){
 				document.getElementById("SaveBtn").style.backgroundColor = "#00e600";
 				ResetControlsDelayed();	
@@ -122,6 +121,23 @@ function MeasureValuation() {
 	oRequest.send(null);	
 	if(!measuring)		
 		SetSetup(false);	
+}
+function ResetData() {	
+	var oRequest = new XMLHttpRequest();
+	var sURL  = '/reset';
+	oRequest.open("GET",sURL,true);
+	oRequest.onload = function (e) {
+		if(oRequest.readyState === 4 && oRequest.status === 200){						
+			SetOutput(oRequest.responseText, false);
+		}
+		else{			
+			SetOutput("Reset Error", true);
+		}
+	};
+	oRequest.onerror = function (e) {		
+		SetOutput("Reset Error", true);
+	};
+	oRequest.send(null);	
 }
 function Upload(){
 	document.getElementsByClassName('dimmer')[0].style.display = 'block';	
@@ -227,7 +243,8 @@ function hsl_col_perc(percent, start, end) {
   // Return a CSS HSL string
   return 'hsl('+c+', 100%, 50%)';
 }
-function SetSetupVisibility(){	
+function SetSetupVisibility(){
+	SetSetup(false);
 	document.getElementById("SetupContainer").style.display = "block";
 	document.getElementById("SaveBtn").style.backgroundColor = "#008CBA";
 }
@@ -247,6 +264,8 @@ function ResetControls() {
 	document.getElementById("Calibrate").style.backgroundColor = "#008CBA";
 	document.getElementById("SaveBtn").style.backgroundColor = "#008CBA";
 }
-function CloseModal() {  
+function CloseModal() {
+  ResetData();
+  document.getElementById("ThresholdValue").innerHTML = document.getElementById("SliderValue").innerHTML;
   document.getElementById("SetupContainer").style.display = "none";
 }

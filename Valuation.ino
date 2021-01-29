@@ -8,8 +8,7 @@ void Valutation() {
     return;
 
   int x = accel.getX();
-  int y = accel.getY();
-  int z = accel.getZ();
+  int y = accel.getY();  
   //-90 -> +90
   //-432 -> 109 / -287 -> 247
   //541 / 533

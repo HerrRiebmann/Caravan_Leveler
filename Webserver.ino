@@ -9,13 +9,14 @@ void WiFiBegin() {
   webServer.on("/setup", handle_setup); 
   webServer.on("/calibrate", handle_calibrate);
   webServer.on("/valuate", handle_valuation);
+  webServer.on("/reset", handle_reset);
   webServer.on("/upload",  HTTP_POST,[](){ webServer.send(200);}, handle_fileupload);
 
   //Allways redirect to captive portal. Request comes with IP (8.8.8.8) or URL (connectivitycheck.XXX / captive.apple / etc.)  
   webServer.on("/generate_204", redirect);    //Android captive portal.
   webServer.on("/fwlink", redirect);   //Microsoft captive portal.
   
-  webServer.on("/connecttest.txt", redirect); //www.msftconnecttest.com  
+  webServer.on("/connecttest.txt", redirect); //www.msftconnecttest.com
   webServer.on("/hotspot-detect.html", redirect); //captive.apple.com
   
   webServer.on("/success.txt", handle_success); //detectportal.firefox.com/sucess.txt
@@ -145,6 +146,11 @@ void handle_valuation() {
   }
   valuationActive = !valuationActive; 
   webServer.send(200, "text/plaint", result);
+}
+
+void handle_reset(){
+  LoadData();
+  webServer.send(200, "text/plaint", "OK");
 }
 
 void handleNotFound() {

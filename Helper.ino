@@ -78,15 +78,15 @@ void ProcessSetupArguments() {
     }
 
     if (webServer.argName(i).compareTo(F("t")) == 0) {
-      int i = webServer.arg(0).toInt();
-      if (i > 0 && i <= 90) {
-        levelThreshold = i;
+      int j = webServer.arg(i).toInt();
+      if (j > 0 && j <= 90) {
+        levelThreshold = j;
         StoreLevelThreshold();
       }
     }
     if (valutationChanged)
-      StoreLevelValuation();
-  }
+      StoreLevelValuation();    
+  }  
 }
 
 String toStringIp(IPAddress ip) {

@@ -40,7 +40,8 @@ void handleFileRead() {
     }
     size_t sent = webServer.streamFile(file, getContentType(path));
     file.close();
-    Serial.println(String("\tSent file: ") + path);
+    Serial.print(String("\tSent file: ") + path);
+    Serial.println(" " + String(sent));
     return;
   }
 
