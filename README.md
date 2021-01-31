@@ -103,6 +103,8 @@ For more information see [RandomNerdTutorials](https://randomnerdtutorials.com/e
 ## Compatibility
 Tested on iOS and Android 4.4.3, 8 and 10.
 
+(*And all estabished none-mobile Browsers, like Firefox, Edge or Chrome*)
+
 ### Disclamer
 The ADXL345 is **not** a proper device to show exact degrees! It´s an accelerometer, which goal was to measure movements by gravitation.
 So all results are just approximation.
