@@ -8,6 +8,7 @@ This captive portal will force the phone to open up a login-site (_which represe
 
 ## Contents
 * [Usage](#usage)
+* [Video](#video)
 * [3D Case](#3D-Case)
 * [Things](#Things)
 * [HardwareComponents](#HardwareComponents)
@@ -49,6 +50,9 @@ Settings:
 **Save** will store all values above, to the ESP32
 
 **Upload** loads a file to the SPIFFS. To overwrite existing files, the filename must be equal (see [/data](https://github.com/HerrRiebmann/Caravan_Leveler/tree/main/data))!
+
+## Video
+[![](http://img.youtube.com/vi/iUhjaghWvkY/0.jpg)](http://www.youtube.com/watch?v=iUhjaghWvkY "Caravan Leveler")
 
 ## 3D Case
 3D Printed case with wood filament:
