@@ -16,6 +16,7 @@ This captive portal will force the phone to open up a login-site (_which represe
   * [SPIFFS Upload](#SPIFFS-Upload)
   * [Libraries](#Libraries)
   * [OTA (Over the Air Update)](#OTA-Over-the-Air-Update)
+  * [Power switch](#Power-Switch)
 * [Compatibility](#Compatibility)
 * [Disclaimer](#Disclaimer)
 
@@ -99,6 +100,16 @@ You can find the latest release [here](https://github.com/me-no-dev/arduino-esp3
 You should see the ESP32 in Arduino IDE under Tools -> Port -> Network-Interfaces (Sport&Fun Leveler at _IP-Adress_)
 For more information see [RandomNerdTutorials](https://randomnerdtutorials.com/esp32-over-the-air-ota-programming/)
 
+### Power Switch
+The DC converter is connected to the 12V net. So it will only be powered, enabling the boardnet (_as you can see at the start of the video_).
+To prevent the converter being powered all the time, standing on a campingside, I´ve added a illuminated momentary switch:
+![Power Switch](/Images/Leveler%20Power%20Switch.jpg)
+19mm momentary blue led switch. Color and various logos can be ordered on well known, chinese express online shop ;) 
+
+Got a relais in between, which disconnects after about 15 minutes, after powering up.
+Not easy to find the right one, which immediately closes the relais and opens it after a specific period of time.
+Then remain like that, until the powersupply is cut off. A **JK 11** timing relais (V2.0.2021-1) worked great, using a jumper instead of a trigger button.
+But not yet constantly installed...
 
 ## Compatibility
 Tested on iOS and Android 4.4.3, 8 and 10.
