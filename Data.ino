@@ -38,7 +38,7 @@ void LoadValuation() {
 void LoadLevelThreshold() {
   levelThreshold = EEPROM.read(EEPROM_LEVEL_THRESHOLD);
   if (levelThreshold == 0xff || levelThreshold == 0)
-    levelThreshold = 10;
+    levelThreshold = 5;
   Serial.print(F("Loaded Threshold: "));
   Serial.println(levelThreshold);
 }

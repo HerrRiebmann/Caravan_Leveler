@@ -18,8 +18,8 @@ Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
 //Webserver
 #include <WiFi.h>
 #include <WebServer.h>
-const char* ssid = "SSID";
-const char* password = "PASSWORD";
+const char* ssid = "FindMichDoch2";
+const char* password = "5AF714A8B";
 
 WebServer webServer(80);
 
@@ -40,7 +40,7 @@ int calibrationY = -25;
 int valuationX = 271;
 int valuationY = 267;
 bool valuationActive = false;
-uint8_t levelThreshold = 10;
+uint8_t levelThreshold = 5;
 bool invertAxis = false;
 bool useAcessPointMode = false;
 

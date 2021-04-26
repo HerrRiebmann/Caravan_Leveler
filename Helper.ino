@@ -107,3 +107,9 @@ void writeIntIntoEEPROM(int address, int16_t number) {
 int16_t readIntFromEEPROM(int address) {
   return (EEPROM.read(address) << 8) + EEPROM.read(address + 1);
 }
+
+String GetCustomText(){
+  //Return any text. Pipes ( | ) are not allowed!
+  //return String("Battery: 12,34V");
+  return String("");
+}

@@ -179,3 +179,7 @@ canvas {
 	display:none;
 	z-index:100;	
 }
+.customLabel {
+  text-align: left;
+  float: left;
+}

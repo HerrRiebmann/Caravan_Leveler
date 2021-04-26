@@ -88,14 +88,19 @@ void handle_level() {
   // /level
   if (!accelInitialized) {
     webServer.send(400, "text/plain", "Gyro not initialized!");
-    return;
+    return;    
   }
 
   String txt = String(invertAxis ? levelY : levelX);
   txt.concat("|");
-  txt.concat(String(invertAxis ? levelX : levelY));
+  txt.concat(String(invertAxis ? levelX * -1 : levelY));
   txt.concat("|");
   txt.concat(String(levelThreshold));
+  String customText = GetCustomText();  
+  if(customText.length() > 0){    
+    txt.concat("|");
+    txt.concat(customText);
+  }
   webServer.send(200, "text/plain", txt);
 
   lastMillisClientAvailable = millis();

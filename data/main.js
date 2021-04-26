@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	SetSetup(false);
 });
 function GetLevel(){
-	//if(PCVersion)	return;
+	if(PCVersion) return;
 	var oRequest = new XMLHttpRequest();
 	var sURL  = '/level';
 	oRequest.open("GET",sURL,true);	
@@ -26,6 +26,8 @@ function GetLevel(){
 				DrawLevel("Y");
 				SetOutput("", false);
 			}
+			if(arr.length > 3)
+				SetCustomText(arr[3]);
 		} else {
 			SetLevel(0,0,10);
 			ADXL345_Initialized = false;
@@ -253,6 +255,9 @@ function SetOutput(text, error){
 	output.innerHTML = text;
 	output.style.color = error? "#FF0000" : "#008CBA";
 	ResetControlsDelayed();
+}
+function SetCustomText(text){
+	document.getElementsByClassName('customLabel')[0].innerHTML = text;		
 }
 function ResetControlsDelayed() {
 	setTimeout(ResetControls,3000);
